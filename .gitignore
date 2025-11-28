@@ -6,6 +6,8 @@ venv
 data/
 .vscode/settings.json
 chroma_db/
+.gitkeep
+
 
 # Work files
 .python-version
