@@ -13,6 +13,7 @@ def extract_date_features(df, date_column=DATE_COLUMN):
     # Convertir directement en codes numériques au lieu de category
     df["weekday"] = df[date_column].dt.weekday
     df["weekday_name"] = df[date_column].dt.weekday.map(jours_fr)  # Optionnel: garder les noms pour référence
+    
     return df
 
 def prepare_features_for_xgboost(X):

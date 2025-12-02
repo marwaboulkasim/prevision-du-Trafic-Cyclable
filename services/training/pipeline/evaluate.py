@@ -21,9 +21,9 @@ def evaluate_model(model, X, y, baseline=True, figure_dir="figures"):
     # Créer le dossier figures s'il n'existe pas
     os.makedirs(figure_dir, exist_ok=True)
 
-    # ------------------------
+
     # Prédictions du modèle
-    # ------------------------
+
     preds = model.predict(X)
 
     # Filtrer y > 0 pour MAPE
@@ -41,9 +41,9 @@ def evaluate_model(model, X, y, baseline=True, figure_dir="figures"):
         "MAPE": float(mape)
     }
 
-    # ------------------------
+
     # Baseline (moyenne)
-    # ------------------------
+
     if baseline:
         mean_val = y.mean()
         baseline_preds = np.full_like(y, mean_val, dtype=float)
@@ -57,9 +57,9 @@ def evaluate_model(model, X, y, baseline=True, figure_dir="figures"):
             "MAPE_baseline": float(baseline_mape)
         })
 
-    # ------------------------
+
     # Visualisation
-    # ------------------------
+
     plt.figure(figsize=(12,6))
     plt.plot(y.values[:500], label="True", marker="o", linestyle="-")
     plt.plot(preds[:500], label="Model", marker="x", linestyle="--")

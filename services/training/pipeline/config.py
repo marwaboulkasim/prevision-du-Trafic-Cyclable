@@ -1,8 +1,8 @@
 from pathlib import Path
 
-# ----------------------
+
 # Chemins
-# ----------------------
+
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data/raw"
 MODEL_DIR = BASE_DIR.parent / "models"
@@ -12,8 +12,8 @@ OUTPUT_DIR = BASE_DIR.parent / "outputs"
 
 
 
-TARGET_COLUMN = "value"        # c'est ce que tu veux prédire
-DATE_COLUMN = "time"           # colonne datetime
+TARGET_COLUMN = "value"        
+DATE_COLUMN = "time"           
 CATEGORICAL_COLUMNS = ["id"]   # seule colonne catégorielle existante
 NUMERIC_COLUMNS = ["value"]
 FEATURE_COLUMNS = ["id"]       # tu peux ajouter "coordinates" si besoin
@@ -25,16 +25,16 @@ VALIDATION_SIZE = 0.2
 
 
 
-# ----------------------
+
 # Paramètres entraînement
-# ----------------------
+
 RANDOM_SEED = 42
 TEST_SIZE = 0.2
 VALIDATION_SIZE = 0.2
 
-# ----------------------
+
 # Paramètres XGBoost
-# ----------------------
+
 MODEL_TYPE = "XGBoost"
 XGB_PARAMS = {
     "n_estimators": 100,
@@ -45,16 +45,16 @@ XGB_PARAMS = {
     "random_state": RANDOM_SEED
 }
 
-# ----------------------
+
 # Préprocessing
-# ----------------------
+
 DATE_FEATURES = ["year", "month", "day", "hour", "weekday"]
 CATEGORICAL_COLUMNS = ["vehicleType", "laneId"]
 NUMERIC_COLUMNS = ["count"]
 
-# ----------------------
+
 # Hyperparam tuning
-# ----------------------
+
 HYPERPARAM_GRID = {
     "n_estimators": [100, 200, 300],
     "max_depth": [3, 6, 10],
