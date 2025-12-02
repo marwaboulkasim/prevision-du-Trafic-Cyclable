@@ -1,15 +1,28 @@
 from fastapi import FastAPI
-from routes import router
-from pydantic import BaseModel
+from pred_client import get_prediction
 
 
-class PredictionResponse(BaseModel):
-    counter_id: str
-    date: str
-    prediction: float
+app = FastAPI()
 
-app = FastAPI(title="Backend API - Traffic Vélo")
+@app.get("/traffic/predict")
+def predict(counter_id: str, date:str):
+    """Le endpoint utiliser par le frontend"""
 
-app.include_router(router)
+    result = get_prediction(counter_id, date)
+
+    if "error" in result:
+        return {
+            "status": "error",
+            "message": "service de prediction indisponible"
+        }
+    
+    return {
+        "status": "success",
+        "counter_id": counter_id,
+        "date": date,
+        "prediction": result["prediction"]
+    }
+
+
 
 
