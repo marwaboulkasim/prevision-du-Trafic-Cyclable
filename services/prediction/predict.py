@@ -9,7 +9,6 @@ def load_model():
        model = pickle.load(f)
     return model
 
-
 def features(counter_id: str, date: str):
 
     df = pd.dataframe([{

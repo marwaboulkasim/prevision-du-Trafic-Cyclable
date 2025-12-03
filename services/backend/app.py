@@ -15,7 +15,6 @@ def predict(counter_id: str, date:str):
             "status": "error",
             "message": "service de prediction indisponible"
         }
-    
     return {
         "status": "success",
         "counter_id": counter_id,
