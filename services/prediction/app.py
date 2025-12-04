@@ -18,3 +18,5 @@ def predict(counter_id: str, date: str = None):
         "date": date,
         "prediction": prediction
     }
+
+print()
