@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 import pandas as pd
 import requests
 
@@ -20,9 +22,9 @@ class APIFetcher:
         )
         return self
 
-    def fetch_intensity(self):
+    def fetch_historical_data(self):
         """
-        Fetch intensity data for every year since made available and for every counter
+        Fetch historical data for every year since made available and for every counter
         """
         years = ["2022", "2023", "2024", "2025"]
         response_data = []
@@ -53,5 +55,41 @@ class APIFetcher:
             if not temp_df.empty:
                 dfs.append(temp_df)
 
-        self.df = pd.concat(dfs, ignore_index=True)
+        self.historical_data = pd.concat(dfs, ignore_index=True)
+        return self
+
+    def fetch_new_historical_data(self):
+        """
+        Fetch yesterday's historical data
+        """
+        today = date.today()
+        # yesterday = today - timedelta(1)
+        yesterday = "2025-11-30"
+        response_data = []
+
+        for id in self.counters_df["id"]:
+            response = requests.get(
+                f"https://portail-api-data.montpellier3m.fr/ecocounter_timeseries/{id}/attrs/intensity?fromDate={str(yesterday)}T00%3A00%3A00&toDate={str(today)}T00%3A00%3A00"
+            )
+            print(response.json())
+            response_data.append(response.json())
+
+        id = [item.get("entityId", {}) for item in response_data]
+        datetime = [item.get("index") for item in response_data]
+        intensity = [item.get("values") for item in response_data]
+
+        dfs = []
+
+        for i in range(len(id)):
+            temp_df = pd.DataFrame(
+                {
+                    "id": id[i],
+                    "datetime": datetime[i],
+                    "intensity": intensity[i],
+                }
+            )
+            if not temp_df.empty:
+                dfs.append(temp_df)
+
+        self.new_historical_data = pd.concat(dfs, ignore_index=True)
         return self
