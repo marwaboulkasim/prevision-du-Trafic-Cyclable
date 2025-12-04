@@ -1,57 +1,60 @@
 import pandas as pd
 import pickle
+from common.database.database import supabase
+import datetime
 
 
 def load_model():
     """charge le modéle entrainé"""
-    model_path = "model/model.pkl"
+    model_path = "models/xgb_model.pkl"
     with open(model_path, "rb") as f:
        model = pickle.load(f)
     return model
 
-def features(counter_id: str, date: str):
 
-    df = pd.dataframe([{
-        "counter_id": counter_id,
-        "date": date,
-        "day": pd.to_datetime(date).day,
-        "month": pd.to_datetime(date).month,
-        "weekday": pd.to_datetime(date).weekday(),
+def fetch_daily_data():
+    today = datetime.date.today().isoformat()
+    daily_data = supabase.table("forecast_data") \
+        .select("*") \
+        .gte("datetime", f"{today}T00:00:00") \
+        .lt("datetime", f"{today}T23:59:59") \
+        .execute()
+    return daily_data
 
-    }])
-    return df
-
-def predict_traffic(model, counter_id: str , date: str):
+def predict_traffic(model):
     """Génére la prediction du traffic"""
-    features = features(counter_id, date)
-    prediction = model.predict(features)[0]
-    return float(prediction)
+    daily_data = fetch_daily_data()
+    print(daily_data)
 
-
-
-
-
-
-
-
-
-
-
-# def predict_for_day(counter_id: str, date: str = None):
+    df = pd.json_normalize(daily_data.data)
+    print(f"la base de donnée", df)
     
-#     if date is None:
-#         date = datetime.date.today().isoformat()
+    df = df[["hour", "year",  "weekday", "day", "month", "counter_id"]]
 
-#     date_objet = datetime.datetime.fromisoformat(date)
+    def predict_row(row):
+        features = row.drop("counter_id")            
+        features = features.to_frame().T             
+        pred = model.predict(features)[0]            
+        return float(pred) 
 
-#     month = date_objet.month
-#     weekday = date_objet.weekday()
+    df["forecast"]= df.apply(predict_row, axis=1)
+    print(df)
+    # prediction = model.predict(df.drop(column= "counter_id"))
+    # print(prediction)
+    # return prediction.tolist()
 
-#     X = np.array([[month, weekday]])
-#     prediction = model.predict(X)[0]
+print(predict_traffic(load_model()))
 
-#     return {
-#         "counter_id": counter_id,
-#         "date": date,
-#         "prediction": float(prediction)
-#     }
+
+
+
+
+ # # Convertir les colonnes en types numériques (sinon XGBoost refuse les 'object')
+    # numeric_cols = ["hour", "year", "weekday", "day", "month"]
+    # for col in numeric_cols:
+    #     df[col] = pd.to_numeric(df[col], errors="coerce")
+    
+    # # Vérifier s'il y a des NaN après la conversion
+    # if df[numeric_cols].isnull().any().any():
+    #     print("⚠️ Attention: Certaines valeurs n'ont pas pu être converties en nombres")
+    #     df = df.dropna(subset=numeric_cols)

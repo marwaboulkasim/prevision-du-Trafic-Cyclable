@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from pred_client import get_prediction
 
-
 app = FastAPI()
 
 @app.get("/traffic/predict")
