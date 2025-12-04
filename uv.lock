@@ -1,0 +1,19 @@
+version = 1
+revision = 3
+requires-python = ">=3.13"
+
+[manifest]
+members = [
+    "prevision-du-trafic-cyclable",
+    "training",
+]
+
+[[package]]
+name = "prevision-du-trafic-cyclable"
+version = "0.1.0"
+source = { virtual = "." }
+
+[[package]]
+name = "training"
+version = "0.1.0"
+source = { virtual = "services/training" }
