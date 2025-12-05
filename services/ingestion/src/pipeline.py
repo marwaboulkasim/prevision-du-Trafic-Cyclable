@@ -17,24 +17,21 @@ class IngestionPipeline:
         _ = self.api_fetcher.fetch_counters().fetch_historical_data()
         print("Successfully fetched data")
 
+        _ = self.api_fetcher.fetch_weather_data()
+
         print("Applying transformation methods to data...")
         self.api_fetcher.historical_data = (
-            self.data_transformer.apply_basic_transformations(
-                self.api_fetcher.historical_data
-            )
-        )
-        self.api_fetcher.historical_data = self.data_transformer.add_features(
-            self.api_fetcher.historical_data
-        )
-        self.api_fetcher.historical_data = (
-            self.data_transformer.convert_datetime_to_string(
-                self.api_fetcher.historical_data
-            )
-        )
-        self.api_fetcher.historical_data = self.data_transformer.clean(
-            self.api_fetcher.historical_data
+            self.data_transformer.load_historical_df(self.api_fetcher.historical_data)
+            .load_counters_df(self.api_fetcher.counters_df)
+            .add_coordinates()
+            .apply_basic_transformations()
+            .add_features()
+            .convert_datetime_to_string()
+            .clean()
+            .df
         )
         print("Successfully transformed data")
+        print(self.api_fetcher.historical_data)
 
         # print("Fetching new historical data...")
         # _ = self.api_fetcher.fetch_new_historical_data()
