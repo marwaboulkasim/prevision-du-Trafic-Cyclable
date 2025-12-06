@@ -23,6 +23,9 @@ class APIFetcher:
         self.counters_df = self.counters_df.rename(
             columns={"location.value.coordinates": "coordinates"}
         )
+        self.counters_df["rounded_coordinates"] = self.counters_df["coordinates"].apply(
+            lambda x: [round(x[0], 2), round(x[1], 2)]
+        )
         return self
 
     def fetch_historical_data(self):
@@ -32,7 +35,7 @@ class APIFetcher:
         years = ["2022", "2023", "2024", "2025"]
         response_data = []
 
-        for id in self.counters_df["id"]:
+        for id in self.counters_df["id"][[0, 1]]:
             for year in years:
                 from_date = f"{year}-01-01"
                 to_date = f"{year}-12-01"
@@ -101,10 +104,6 @@ class APIFetcher:
         """
         Fetch hourly weather data for every counter's location
         """
-        self.counters_df["rounded_coordinates"] = self.counters_df["coordinates"].apply(
-            lambda x: [round(x[0], 2), round(x[1], 2)]
-        )
-
         start_date = "2022-01-01"
         end_date = date.today()
 

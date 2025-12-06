@@ -10,6 +10,10 @@ class DataTransformer:
         self.counters_df = df
         return self
 
+    def load_weather_df(self, df: pd.DataFrame):
+        self.weather_df = df
+        return self
+
     def add_coordinates(self):
         if "coordinates" not in self.df.columns:
             self.df = pd.merge(self.df, self.counters_df, on="id")
@@ -62,6 +66,7 @@ class DataTransformer:
             [
                 "counter_id",
                 "coordinates",
+                "rounded_coordinates",
                 "datetime",
                 "year",
                 "month",
