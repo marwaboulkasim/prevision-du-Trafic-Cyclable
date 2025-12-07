@@ -19,13 +19,19 @@ class DataTransformer:
             self.df = pd.merge(self.df, self.counters_df, on="id")
         return self
 
+    def add_weather(self):
+        self.df = pd.merge(
+            self.df, self.weather_df, on=["rounded_coordinates", "datetime"], how="left"
+        )
+        return self
+
     def apply_basic_transformations(self):
         """
         Convert 'datetime' column to datetime to be able to use what this data type provides within pandas.
         Rename 'id' column.
         Convert 'intensity' column to int type.
         """
-        self.df["datetime"] = pd.to_datetime(self.df["datetime"])
+        self.df["datetime"] = pd.to_datetime(self.df["datetime"], utc=True)
         self.df = self.df.rename(columns={"id": "counter_id"})
         self.df["intensity"] = self.df["intensity"].astype(int)
         return self
@@ -78,6 +84,8 @@ class DataTransformer:
                 "rolling_28d",
                 "lag_7d",
                 "lag_28d",
+                "temperature",
+                "rain",
                 "intensity",
             ]
         ]
@@ -94,5 +102,7 @@ class DataTransformer:
 
     def clean(self):
         """ """
-        self.df = self.df.drop_duplicates(subset=["counter_id", "datetime"])
+        self.df = self.df.drop_duplicates(
+            subset=["counter_id", "datetime"], ignore_index=True
+        )
         return self
