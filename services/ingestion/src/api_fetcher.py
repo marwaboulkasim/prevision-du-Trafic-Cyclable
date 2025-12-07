@@ -23,8 +23,11 @@ class APIFetcher:
         self.counters_df = self.counters_df.rename(
             columns={"location.value.coordinates": "coordinates"}
         )
+        self.counters_df["coordinates"] = self.counters_df["coordinates"].apply(
+            lambda x: (x[0], x[1])
+        )
         self.counters_df["rounded_coordinates"] = self.counters_df["coordinates"].apply(
-            lambda x: [round(x[0], 2), round(x[1], 2)]
+            lambda x: (round(x[0], 2), round(x[1], 2))
         )
         return self
 
@@ -35,7 +38,7 @@ class APIFetcher:
         years = ["2022", "2023", "2024", "2025"]
         response_data = []
 
-        for id in self.counters_df["id"][[0, 1]]:
+        for id in self.counters_df["id"]:
             for year in years:
                 from_date = f"{year}-01-01"
                 to_date = f"{year}-12-01"
@@ -105,7 +108,7 @@ class APIFetcher:
         Fetch hourly weather data for every counter's location
         """
         start_date = "2022-01-01"
-        end_date = date.today()
+        end_date = date.today() - timedelta(1)
 
         response_data = []
         known_coordinates = []
@@ -117,12 +120,9 @@ class APIFetcher:
 
         for id in self.counters_df["id"]:
             print(f"\nLOOP {loop}")
-            latitude = self.counters_df.loc[
+            latitude, longitude = self.counters_df.loc[
                 self.counters_df["id"] == id, "rounded_coordinates"
-            ].values[0][0]
-            longitude = self.counters_df.loc[
-                self.counters_df["id"] == id, "rounded_coordinates"
-            ].values[0][1]
+            ].values[0]
 
             if [latitude, longitude] not in known_coordinates:
                 known_coordinates.append([latitude, longitude])
@@ -137,15 +137,15 @@ class APIFetcher:
                     start_time = time.time()
 
                 print(
-                    f"API CALL ({call_count}) FOR {id} LOCATED AT [{latitude}, {longitude}]"
+                    f"API CALL ({call_count}) FOR {id} LOCATED AT ({latitude}, {longitude})"
                 )
                 response = requests.get(
-                    f"https://archive-api.open-meteo.com/v1/archive?latitude={latitude}&longitude={longitude}&start_date={start_date}&end_date={end_date}&hourly=temperature_2m,rain&timezone=auto"
+                    f"https://archive-api.open-meteo.com/v1/archive?latitude={latitude}&longitude={longitude}&start_date={start_date}&end_date={end_date}&hourly=temperature_2m,rain"
                 )
                 print(f"{response.json()}"[:500])
                 response_data.append(
                     {
-                        "rounded_coordinates": [latitude, longitude],
+                        "rounded_coordinates": (latitude, longitude),
                         "response": response.json(),
                     }
                 )
@@ -180,6 +180,9 @@ class APIFetcher:
         )
         self.weather_data = self.weather_data.explode(
             ["datetime", "temperature", "rain"], ignore_index=True
+        )
+        self.weather_data["datetime"] = pd.to_datetime(
+            self.weather_data["datetime"], utc=True
         )
         print(self.weather_data)
         return self
