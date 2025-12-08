@@ -1,27 +1,34 @@
 
-from fastapi import FastAPI, Query
+from fastapi import FastAPI
 from predict import load_model, predict_traffic
 
 app = FastAPI(
     title="API de prédiction trafic vélo - Journalier"
 )
 
-# Chargement du modèle une seule fois au démarrage
+# Chargement du modèle
 model = load_model()
 
+
 @app.get("/predict")
-def predict(
-    year: int | None = Query(None),
-    month: int | None = Query(None),
-    day: int | None = Query(None),
-    hour: int | None = Query(None),
-    weekday: int | None = Query(None),
-    counter_id: str = None
-):
-    """
-    Retourne la prédiction de trafic.
-    Si aucun paramètre n'est fourni, prédit pour les données du jour.
-    Sinon, prédit pour les valeurs fournies.
-    """
-    prediction = predict_traffic(model, year, month, day, hour, weekday, counter_id)
-    return {"prediction": prediction}
+def predict(counter_id: str, date: str):
+
+    predictions = predict_traffic(model, date)
+
+    # On récupère uniquement la prédiction du compteur demandé
+    filter = [
+        p for p in predictions if p["counter_id"] == counter_id
+    ]
+
+    if not filter:
+        return {
+            "counter_id": counter_id,
+            "date": date,
+            "error": "Aucune donnée pour ce compteur et cette date"
+        }
+
+    return {
+        "counter_id": counter_id,
+        "date": date,
+        "prediction": filter[0]["forecast"]
+    }
