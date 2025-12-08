@@ -6,15 +6,15 @@ import requests
 from datetime import datetime
 import plotly.express as px
 import plotly.graph_objects as go
+from ingestion.src.api_fetcher import  APIFetcher
 
-# Configuration
 st.set_page_config(
     page_title="🚴 Trafic Cyclable Montpellier",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS
+
 st.markdown("""
 <style>
     .main-header {
@@ -330,4 +330,3 @@ with tab4:
         st.write(f"Moyenne : {df_export['value'].mean():.1f}")
         st.write(f"Médiane : {df_export['value'].median():.1f}")
         st.write(f"Écart-type : {df_export['value'].std():.1f}")
-
