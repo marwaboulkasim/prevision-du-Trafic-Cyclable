@@ -1,0 +1,20 @@
+[project]
+name = "ingestion"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pandas>=2.3.3",
+    "requests>=2.32.5",
+]
+
+[tool.uv.sources]
+common = { path = "../../common" }
+
+[tool.basedpyright]
+typeCheckingMode = "basic"
+reportUnknownVariableType = false
+reportUnknownMemberType = false
+reportUnknownParameterType = false
+useLibraryCodeForTypes = true
