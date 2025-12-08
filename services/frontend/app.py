@@ -6,7 +6,6 @@ import requests
 from datetime import datetime
 import plotly.express as px
 import plotly.graph_objects as go
-from ingestion.src.api_fetcher import  APIFetcher
 
 st.set_page_config(
     page_title="🚴 Trafic Cyclable Montpellier",
