@@ -38,10 +38,14 @@ class APIFetcher:
         years = ["2022", "2023", "2024", "2025"]
         response_data = []
 
+        loop = 0
         for id in self.counters_df["id"]:
             for year in years:
+                print(f"\nLOOP {loop}")
+                loop += 1
                 from_date = f"{year}-01-01"
-                to_date = f"{year}-12-01"
+                to_date = f"{year}-12-31"
+                print(f"Fetching the year {year} for counter {id}...")
                 response = requests.get(
                     f"https://portail-api-data.montpellier3m.fr/ecocounter_timeseries/{id}/attrs/intensity?fromDate={from_date}T00%3A00%3A00&toDate={to_date}T00%3A00%3A00"
                 )
