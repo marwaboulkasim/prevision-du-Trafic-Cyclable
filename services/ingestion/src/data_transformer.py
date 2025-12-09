@@ -107,6 +107,46 @@ class DataTransformer:
         self.df["date"] = self.df["date"].astype(str)
         return self
 
+    def keep_top_counters(self):
+        number_of_counters_to_keep = 10
+        total_days = self.df["date"].nunique()
+        quality_df = (
+            self.df.groupby("counter_id")
+            .agg(
+                days_present=("date", "nunique"),
+                missing_days=("date", lambda x: total_days - x.nunique()),
+                zero_ratio=("intensity", lambda x: (x == 0).mean()),
+                std_intensity=("intensity", "std"),
+            )
+            .reset_index()
+        )
+        quality_df["std_capped"] = quality_df["std_intensity"].clip(
+            upper=quality_df["std_intensity"].quantile(0.95)
+        )
+        quality_df["score"] = (
+            (quality_df["days_present"] / total_days) * 0.5
+            + (1 - quality_df["zero_ratio"]) * 0.2
+            + (1 - quality_df["std_capped"] / quality_df["std_capped"].max()) * 0.3
+        )
+
+        self.best_counters: pd.DataFrame = quality_df.sort_values(
+            "score", ascending=False
+        ).head(number_of_counters_to_keep)
+
+        print(self.best_counters)
+
+        self.best_counters = self.best_counters["counter_id"]  # pyright: ignore[reportAttributeAccessIssue]
+        self.best_counters = pd.merge(
+            self.best_counters,
+            self.counters_df,
+            how="left",
+            left_on="counter_id",
+            right_on="id",
+        ).drop(columns="id")
+
+        print(self.best_counters)
+        return self
+
     def clean(self):
         """ """
         self.df["temperature"] = self.df["temperature"].ffill()
