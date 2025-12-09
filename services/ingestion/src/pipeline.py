@@ -14,10 +14,12 @@ class IngestionPipeline:
 
     def run(self):
         print("Fetching data...")
-        _ = self.api_fetcher.fetch_counters().fetch_historical_data()
+        _ = (
+            self.api_fetcher.fetch_counters()
+            .fetch_historical_data()
+            .fetch_weather_data()
+        )
         print("Successfully fetched data")
-
-        _ = self.api_fetcher.fetch_weather_data()
 
         print("Applying transformation methods to data...")
         self.api_fetcher.historical_data = (
@@ -25,8 +27,11 @@ class IngestionPipeline:
             .load_counters_df(self.api_fetcher.counters_df)
             .add_coordinates()
             .apply_basic_transformations()
+            .convert_to_daily_values()
             .add_features()
-            .convert_datetime_to_string()
+            .load_weather_df(self.api_fetcher.weather_data)
+            .add_weather()
+            .convert_date_to_string()
             .clean()
             .df
         )
@@ -38,6 +43,6 @@ class IngestionPipeline:
         # print(self.api_fetcher.new_historical_data)
         # print("Successfully fetched new historical data")
 
-        # _ = self.db_inserter.insert(
-        #     self.api_fetcher.historical_data.to_dict(orient="records")
-        # )
+        _ = self.db_inserter.insert(
+            self.api_fetcher.historical_data.to_dict(orient="records")
+        )
