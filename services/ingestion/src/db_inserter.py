@@ -17,7 +17,7 @@ class DBInserter:
                     f"\rInserting... : {min(i + batch_size, len(records))}/{len(records)}"
                 )
                 sys.stdout.flush()
-                _ = self.client.table("historical_data_test").insert(batch).execute()
+                _ = self.client.table("historical_data").insert(batch).execute()
 
             sys.stdout.write("\n")
         except Exception as e:

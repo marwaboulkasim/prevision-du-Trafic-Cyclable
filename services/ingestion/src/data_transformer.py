@@ -128,6 +128,7 @@ class DataTransformer:
                 "lag_28d",
                 "temperature",
                 "rain",
+                "is_rainy",
                 "intensity",
             ]
         ]
