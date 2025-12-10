@@ -10,8 +10,8 @@ from common.database.database import supabase  # pyright: ignore[reportMissingTy
 class DBHandler:
     def __init__(self) -> None:
         self.client = supabase
-        self.historical_table: str = "historical_data_test"
-        self.forecast_table: str = "forecast_data_2"
+        self.historical_table: str = "historical_data"
+        self.forecast_table: str = "forecast_data"
         self.best_counters_table: str = "best_counters"
         self.last_28_days_df: pd.DataFrame = pd.DataFrame()
 
@@ -40,7 +40,7 @@ class DBHandler:
         except Exception as e:
             return e
 
-    def select_last_28_days(self):
+    def select_last_28_days(self, best_counters_df: pd.DataFrame):
         date_28_days_ago = (
             datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(28)
         ).strftime("%Y-%m-%d")
@@ -48,6 +48,7 @@ class DBHandler:
             response = (
                 self.client.table(self.historical_table)
                 .select("*")
+                .in_("counter_id", best_counters_df["counter_id"].tolist())
                 .gte("date", date_28_days_ago)
                 .execute()
             )
@@ -69,8 +70,19 @@ class DBHandler:
     def select_best_counters(self):
         try:
             response = self.client.table(self.best_counters_table).select("*").execute()
-            self.best_counters_df = pd.DataFrame.from_records(response.data)
-            return self
+            self.best_counters_df: pd.DataFrame = pd.DataFrame.from_records(
+                response.data
+            )
         except Exception as e:
             print(e)
             return e
+        return self
+
+    def insert_forecast_data(self, records):
+        try:
+            _ = self.client.table(self.forecast_table).insert(records).execute()
+            print("Successfully inserted forecast data")
+        except Exception as e:
+            print(e)
+            return e
+        return self

@@ -17,8 +17,12 @@ class IngestionPipeline:
     def run(self):
         is_table_filled = self.db_handler.check_content()
         if is_table_filled:
+            print("Inserting daily forecast data")
             self.forecast_handler.provide_forecast_features(
-                self.api_fetcher.fetch_counters().counters_df
+                self.db_handler.select_best_counters().best_counters_df  # pyright: ignore[reportAttributeAccessIssue]
+            )
+            _ = self.db_handler.insert_forecast_data(
+                self.forecast_handler.forecast_df.to_dict(orient="records")
             )
         else:
             print("Fetching data...")
