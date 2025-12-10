@@ -30,9 +30,15 @@ class IngestionPipeline:
             .clean()
             .df
         )
+        
+        
+        
+        
+        
+
         print("Successfully transformed data")
         print(self.api_fetcher.historical_data)
-
+        
         # print("Fetching new historical data...")
         # _ = self.api_fetcher.fetch_new_historical_data()
         # print(self.api_fetcher.new_historical_data)

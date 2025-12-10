@@ -18,7 +18,6 @@ def evaluate_model(model, X, y, baseline=True, figure_dir="figures"):
         dict: métriques
     """
 
-    # Créer le dossier figures s'il n'existe pas
     os.makedirs(figure_dir, exist_ok=True)
 
 

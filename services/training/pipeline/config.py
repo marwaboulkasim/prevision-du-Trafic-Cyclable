@@ -1,40 +1,39 @@
 from pathlib import Path
 
-
-# Chemins
-
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data/raw"
 MODEL_DIR = BASE_DIR.parent / "models"
 OUTPUT_DIR = BASE_DIR.parent / "outputs"
 
+# Colonnes et features
+TARGET_COLUMN = "intensity"  
+DATE_COLUMN = "date"   
+ID_COLUMNS = "counter_id"
 
+# Colonnes catégorielles
+CATEGORICAL_COLUMNS = ["counter_id"]
 
+# Colonnes numériques (features)
+NUMERIC_COLUMNS = [
+    "rolling_7d", "rolling_28d",
+    "lag_7d", "lag_28d",
+    "temperature", "rain",
+    "hour", "day", "month", "year", "weekday",
+    "is_weekend",
+]
 
+# Features pour le modèle
+FEATURE_COLUMNS = CATEGORICAL_COLUMNS + NUMERIC_COLUMNS
 
-TARGET_COLUMN = "value"        
-DATE_COLUMN = "time"           
-CATEGORICAL_COLUMNS = ["id"]   # seule colonne catégorielle existante
-NUMERIC_COLUMNS = ["value"]
-FEATURE_COLUMNS = ["id"]       # tu peux ajouter "coordinates" si besoin
+# Features issues de la date
 DATE_FEATURES = ["year", "month", "day", "hour", "weekday"]
 
+# Split & seed
 RANDOM_SEED = 42
 TEST_SIZE = 0.2
 VALIDATION_SIZE = 0.2
 
-
-
-
-# Paramètres entraînement
-
-RANDOM_SEED = 42
-TEST_SIZE = 0.2
-VALIDATION_SIZE = 0.2
-
-
-# Paramètres XGBoost
-
+# XGBoost
 MODEL_TYPE = "XGBoost"
 XGB_PARAMS = {
     "n_estimators": 100,
@@ -45,16 +44,7 @@ XGB_PARAMS = {
     "random_state": RANDOM_SEED
 }
 
-
-# Préprocessing
-
-DATE_FEATURES = ["year", "month", "day", "hour", "weekday"]
-CATEGORICAL_COLUMNS = ["vehicleType", "laneId"]
-NUMERIC_COLUMNS = ["count"]
-
-
 # Hyperparam tuning
-
 HYPERPARAM_GRID = {
     "n_estimators": [100, 200, 300],
     "max_depth": [3, 6, 10],
