@@ -1,0 +1,36 @@
+name: Data ingestion
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  ingest-data:
+    runs-on: ubuntu-latest
+
+    env:
+      SUPABASE_URL: ${{secrets.SUPABASE_URL}}
+      SUPABASE_KEY: ${{secrets.SUPABASE_KEY}}
+
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v4
+
+      - name: install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: set up python
+        run: uv python install
+
+      - name: install common package
+        working-directory: ./services/ingestion
+        run: uv pip install --editable ../../common
+
+      - name: install ingestion dependencies
+        working-directory: ./services/ingestion
+        run: uv sync
+
+      - name: run ingestion pipeline
+        working-directory: ./services/ingestion
+        run: uv run src/main.py
