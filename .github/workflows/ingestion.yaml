@@ -23,13 +23,13 @@ jobs:
       - name: set up python
         run: uv python install
 
-      - name: install common package
-        working-directory: ./services/ingestion
-        run: uv pip install --editable ../../common
-
       - name: install ingestion dependencies
         working-directory: ./services/ingestion
         run: uv sync
+
+      - name: install common package
+        working-directory: ./services/ingestion
+        run: uv pip install --editable ../../common
 
       - name: run ingestion pipeline
         working-directory: ./services/ingestion
