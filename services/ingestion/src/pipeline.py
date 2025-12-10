@@ -58,11 +58,6 @@ class IngestionPipeline:
                 self.data_transformer.best_counters.to_dict(orient="records")
             )
 
-            # print("Fetching new historical data...")
-            # _ = self.api_fetcher.fetch_counters().fetch_new_historical_data()
-            # print(self.api_fetcher.new_historical_data)
-            # print("Successfully fetched new historical data")
-
-            # _ = self.db_handler.insert(
-            #     self.api_fetcher.historical_data.to_dict(orient="records")
-            # )
+            _ = self.db_handler.insert(
+                self.api_fetcher.historical_data.to_dict(orient="records")
+            )
