@@ -43,13 +43,13 @@ def save_predictions_to_db(predictions, date):
                 success_count += 1
             else:
                 error_count += 1
-                print(f"⚠️ Aucune ligne trouvée pour counter_id={counter_id}, date={date}")
+                print(f"Aucune ligne trouvée pour counter_id={counter_id}, date={date}")
         
         except Exception as e:
             error_count += 1
-            print(f"❌ Erreur pour counter_id={counter_id}: {str(e)}")
+            print(f"Erreur pour counter_id={counter_id}: {str(e)}")
     
-    print(f"✅ {success_count} prédictions sauvegardées, {error_count} erreurs")
+    print(f" {success_count} prédictions sauvegardées, {error_count} erreurs")
     
     return success_count, error_count
 

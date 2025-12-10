@@ -1,32 +1,6 @@
 
 from fastapi import FastAPI
 from predict import load_model, predict_traffic
-
-app = FastAPI(
-    title="API de prédiction trafic vélo - Journalier"
-)
-
-# Chargement du modèle
-model = load_model()
-
-@app.get("/predict")
-def predict():
-
-    predictions = predict_traffic(model)
-
-    if not predictions:
-        return{"errors: Pas de données disponible pour la veille"}
-
-    return {
-        "prediction": predictions
-    }
-
-
-
-
-
-from fastapi import FastAPI
-from predict import load_model, predict_traffic
 from common.database.database import supabase
 import datetime
 
@@ -44,7 +18,6 @@ def predict():
 
     return {
         "message": "Prédictions générées et sauvegardées avec succès",
-        "count": len(predictions),
         "predictions": predictions
     }
 
