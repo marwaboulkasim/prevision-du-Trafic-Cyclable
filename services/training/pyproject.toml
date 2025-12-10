@@ -1,8 +1,7 @@
 [project]
-name = "training"
-version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
-requires-python = ">=3.12"
-
-dependencies = []
+name = "services-training"
+version = "0.0.1"
+description = "Training service for trafic cyclable"
+requires-python = ">=3.13"
+dependencies = [
+]

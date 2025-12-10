@@ -63,6 +63,11 @@ def predict_traffic(model, save_to_db=True):
         return []
 
     df = pd.json_normalize(daily_data.data)
+
+    # Suavegarde de counter_id avant conversion
+    counter_original = df['counter_id'].copy()
+    print(f"\n📋 Nombre de lignes: {len(df)}")
+    print(f"📋 Compteurs: {df['counter_id'].unique()[:3]}...")
     
     # Créer la colonne 'hour' si elle n'existe pas
     if 'hour' not in df.columns:
@@ -76,7 +81,7 @@ def predict_traffic(model, save_to_db=True):
             df['hour'] = 12  # ou une autre valeur par défaut
     
     # Features attendues par le modèle 
-    model_features = ['year', 'month', 'day', 'hour', 'weekday']
+    model_features =  ['counter_id', 'rolling_7d', 'rolling_28d', 'lag_7d', 'lag_28d', 'temperature', 'rain', 'hour', 'day', 'month', 'year', 'weekday', 'is_weekend']
     
     # Vérifier que toutes les colonnes existent
     missing_cols = [col for col in model_features if col not in df.columns]
@@ -94,6 +99,7 @@ def predict_traffic(model, save_to_db=True):
     X = df[model_features].values
     print(f" Shape de X: {X.shape} (devrait être (n, 5))")
     df["prediction"] = model.predict(X)
+    df['counter_id'] = counter_original
 
     predictions = df[["counter_id", "prediction"]].to_dict(orient="records")
     
